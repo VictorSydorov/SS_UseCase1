@@ -49,7 +49,8 @@ namespace SS_UseCase1.Handlers
             {
                 _processors = new DataProcessor[] {
                     new DataProcessor(r=> !string.IsNullOrEmpty(r.NameFilter),  
-                        (countries, request) => countries.Where(c=>c.Name.Common.Contains(request.NameFilter, StringComparison.InvariantCultureIgnoreCase)))                    
+                        (countries, request) => countries.Where(c=>c.Name.Common.Contains(request.NameFilter, StringComparison.InvariantCultureIgnoreCase))),
+                    new DataProcessor(r => r.PopulationFilter > 0,  (countries, request) => countries.Where(c=>c.Population < request.PopulationFilter * 1000000))
                 };
             }
 
