@@ -5,6 +5,11 @@ VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SS_UseCase1", "SS_UseCase1.csproj", "{C04A86D6-B2C8-4B20-A9A2-CD7748D515E9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{49B7D22A-D38F-435A-8EC9-92F4534FE4B0}"
+	ProjectSection(SolutionItems) = preProject
+		Infrastructure setup.txt = Infrastructure setup.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

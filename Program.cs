@@ -1,3 +1,6 @@
+using MediatR;
+using System.Reflection;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -5,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddMediatR((c)=>c.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+builder.Services.AddHttpClient();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -15,6 +20,23 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.MapGet("/countries", async (IMediator mediator) => {
+
+    var request = new CountriesRequest();
+	try
+	{
+        var result = await mediator.Send(request);
+
+        return Results.Ok(result);
+    }
+	catch (Exception)
+	{
+        return Results.StatusCode(500);
+	}
+        
+    
+});
 
 app.Run();
 
