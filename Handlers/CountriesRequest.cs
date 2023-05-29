@@ -4,8 +4,7 @@ using Models;
 
 
 public class CountriesRequest : IRequest<IEnumerable<Country>>
-{
-    public CountriesRequest()
-    {
-    }
+{    
+     public string NameFilter { get; } = string.Empty;
+    
 }
