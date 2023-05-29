@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace SS_UseCase1.Handlers
 {
-    public class CountriesRequestHandler : IRequestHandler<CountriesRequest, IEnumerable<Country>>
+    public class CountriesRequestHandler : IRequestHandler<CountryDataRequest, IEnumerable<Country>>
     {
         private readonly HttpClient httpClient;
 
@@ -16,7 +16,7 @@ namespace SS_UseCase1.Handlers
             httpClient.BaseAddress = new Uri("https://restcountries.com/v3.1/all");
         }
 
-        public async Task<IEnumerable<Country>> Handle(CountriesRequest request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Country>> Handle(CountryDataRequest request, CancellationToken cancellationToken)
         {
             var result = await httpClient.GetAsync("https://restcountries.com/v3.1/all");
             if (result.IsSuccessStatusCode)
@@ -41,8 +41,8 @@ namespace SS_UseCase1.Handlers
 
 
         private class DataProcessor {
-            private readonly Func<CountriesRequest, bool> canProcess;
-            private readonly Func<IEnumerable<Country>, CountriesRequest, IEnumerable<Country>> process;
+            private readonly Func<CountryDataRequest, bool> canProcess;
+            private readonly Func<IEnumerable<Country>, CountryDataRequest, IEnumerable<Country>> process;
 
             private static readonly DataProcessor[] _processors;
 
@@ -54,26 +54,26 @@ namespace SS_UseCase1.Handlers
                         (countries, request) => countries.Where(c=>c.Name.Common.Contains(request.NameFilter, StringComparison.InvariantCultureIgnoreCase))),
 
                     new DataProcessor(r => r.PopulationFilter > 0, 
-                        (countries, request) => countries.Where(c=>c.Population < request.PopulationFilter * 1000000)),
+                        (countries, request) => countries.Where(c=>c.Population < request.PopulationFilter)),
                     
                     new DataProcessor(r => r.ShouldBeSorted,
                         (countries, request) => 
-                            request.SortByName.Equals(CountriesRequest.Ascend)?
-                            countries.OrderBy(c => c.Name) : 
-                            countries.OrderByDescending(c => c.Name)),
+                            request.SortByName.Equals(CountryDataRequest.Ascend)?
+                            countries.OrderBy(c => c.Name.Common) : 
+                            countries.OrderByDescending(c => c.Name.Common)),
 
                     new DataProcessor(r => r.NumberOfCountries > 0,
                         (countries, request) =>countries.Take(request.NumberOfCountries))
                 };
             }
 
-            private DataProcessor(Func<CountriesRequest, bool> canProcess, Func<IEnumerable<Country>, CountriesRequest, IEnumerable<Country>> process)
+            private DataProcessor(Func<CountryDataRequest, bool> canProcess, Func<IEnumerable<Country>, CountryDataRequest, IEnumerable<Country>> process)
             {
                 this.canProcess = canProcess;
                 this.process = process;
             }
 
-            public IEnumerable<Country> Process(IEnumerable<Country> countries, CountriesRequest countriesRequest) {
+            public IEnumerable<Country> Process(IEnumerable<Country> countries, CountryDataRequest countriesRequest) {
                 if (canProcess(countriesRequest))
                 {
                     return process(countries, countriesRequest);
@@ -81,7 +81,7 @@ namespace SS_UseCase1.Handlers
                 else return countries;
             }
 
-            public static IEnumerable<Country> ProcessCountries(IEnumerable<Country> countries, CountriesRequest countriesRequest) {
+            public static IEnumerable<Country> ProcessCountries(IEnumerable<Country> countries, CountryDataRequest countriesRequest) {
                 foreach (var proc in _processors)
                 {
                     countries = proc.Process(countries, countriesRequest);

@@ -21,13 +21,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/countries", async (IMediator mediator) => {
-
-    var request = new CountriesRequest();
+app.MapGet("/countries", async (IMediator mediator, string? name, int? population, string? sort, int? limit) => {
+          
 	try
 	{
-        var result = await mediator.Send(request);
-
+        var result = await mediator.Send(new CountryDataRequest(name, population, sort, limit));
         return Results.Ok(result);
     }
 	catch (Exception)
