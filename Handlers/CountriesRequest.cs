@@ -11,6 +11,8 @@ public class CountriesRequest : IRequest<IEnumerable<Country>>
 
     public bool ShouldBeSorted => SortByName.Equals(Ascend) || SortByName.Equals(Descend);
 
+    public int NumberOfCountries { get; set; } = 0;
+
     public static string Ascend = "ascend";
     public static string Descend = "descend";
 }

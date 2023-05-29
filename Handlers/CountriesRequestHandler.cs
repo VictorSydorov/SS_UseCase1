@@ -53,11 +53,17 @@ namespace SS_UseCase1.Handlers
                     new DataProcessor(r=> !string.IsNullOrEmpty(r.NameFilter),  
                         (countries, request) => countries.Where(c=>c.Name.Common.Contains(request.NameFilter, StringComparison.InvariantCultureIgnoreCase))),
 
-                    new DataProcessor(r => r.PopulationFilter > 0,  (countries, request) => countries.Where(c=>c.Population < request.PopulationFilter * 1000000)),
+                    new DataProcessor(r => r.PopulationFilter > 0, 
+                        (countries, request) => countries.Where(c=>c.Population < request.PopulationFilter * 1000000)),
                     
-                    new DataProcessor(r => r.ShouldBeSorted,(countries, request) =>  
-                          request.SortByName.Equals(CountriesRequest.Ascend)?
-                            countries.OrderBy(c => c.Name) :  countries.OrderByDescending(c => c.Name))
+                    new DataProcessor(r => r.ShouldBeSorted,
+                        (countries, request) => 
+                            request.SortByName.Equals(CountriesRequest.Ascend)?
+                            countries.OrderBy(c => c.Name) : 
+                            countries.OrderByDescending(c => c.Name)),
+
+                    new DataProcessor(r => r.NumberOfCountries > 0,
+                        (countries, request) =>countries.Take(request.NumberOfCountries))
                 };
             }
 
