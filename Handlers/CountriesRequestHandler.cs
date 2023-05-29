@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Models;
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -48,9 +49,15 @@ namespace SS_UseCase1.Handlers
             static DataProcessor()
             {
                 _processors = new DataProcessor[] {
+
                     new DataProcessor(r=> !string.IsNullOrEmpty(r.NameFilter),  
                         (countries, request) => countries.Where(c=>c.Name.Common.Contains(request.NameFilter, StringComparison.InvariantCultureIgnoreCase))),
-                    new DataProcessor(r => r.PopulationFilter > 0,  (countries, request) => countries.Where(c=>c.Population < request.PopulationFilter * 1000000))
+
+                    new DataProcessor(r => r.PopulationFilter > 0,  (countries, request) => countries.Where(c=>c.Population < request.PopulationFilter * 1000000)),
+                    
+                    new DataProcessor(r => r.ShouldBeSorted,(countries, request) =>  
+                          request.SortByName.Equals(CountriesRequest.Ascend)?
+                            countries.OrderBy(c => c.Name) :  countries.OrderByDescending(c => c.Name))
                 };
             }
 
